@@ -40,6 +40,17 @@
 
 ---
 
+## 快速开始
+
+```bash
+git clone https://github.com/Gyf0402/huya-adblock.git
+cd huya-adblock
+```
+
+然后按下面的「使用」一节执行即可。
+
+---
+
 ## 使用
 
 ### 前置
