@@ -1,0 +1,53 @@
+{
+  "$comment": "虎牙直播 PC 客户端去广告补丁规则。target.file 为 asar 内的路径特征，replace 为等长字节替换。",
+  "version": 2,
+  "testedOn": "7.90.3.0",
+  "patchTargets": [
+    {
+      "id": "A",
+      "name": "拦截广告业务接口",
+      "file": "ConfigHelper-",
+      "note": "所有广告（前贴片/卡片/小风车/主播投放）最终走 advertise@* 系列 RPC，在 SDK 转发层直接短路。判定条件 a&&a[1]=='d' 精确命中 advertise@xxx，且不影响 app@deviceId 等正常接口。",
+      "compress": true,
+      "replace": [
+        {
+          "from": "['JsonReq'](a,c){return this['withTimeout'](window['electron']['ipcRenderer']['invoke']('json-req',a,c),eo,a);}",
+          "to": "['JsonReq'](a,c){return a&&a[1]=='d'?Promise.resolve('{}'):this.withTimeout(window.electron.ipcRenderer.invoke('json-req',a,c),eo,a);}"
+        }
+      ]
+    },
+    {
+      "id": "B",
+      "name": "关闭弹窗队列展示",
+      "file": "AppletWebView-",
+      "note": "PopupMgr.showPopup 是弹窗的唯一显示入口。把 popupInfo 置空后，紧接着的 if(af==null)return 会立即返回，窗口不再创建。",
+      "compress": false,
+      "replace": [
+        {
+          "from": "const af=ae['popupInfo'];if(af==null)return;",
+          "to": "const af=null;if(af==null)return;"
+        }
+      ]
+    },
+    {
+      "id": "C",
+      "name": "关闭房间内弹窗分发",
+      "file": "WatchIndex-",
+      "note": "房间页的 iW 分发器按 eType 从 dW 注册表取处理器并展示弹窗。让查找恒为空，走『无处理』分支。",
+      "compress": false,
+      "replace": [
+        {
+          "from": "a38=dW['get'](a37)",
+          "to": "a38=void 0x0"
+        }
+      ]
+    }
+  ],
+  "shorten": {
+    "$comment": "语义等价的紧凑写法，仅用于给补丁腾出字节，保证文件总长不变。",
+    "window['electron']['ipcRenderer']['invoke']": "window.electron.ipcRenderer.invoke",
+    "this['withTimeout']": "this.withTimeout",
+    "this['JsonReq']": "this.JsonReq",
+    "this['JsonPost']": "this.JsonPost"
+  }
+}

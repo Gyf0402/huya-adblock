@@ -1,0 +1,9 @@
+# 客户端文件与备份：本仓库不包含任何原程序
+*.asar
+*.exe
+*.dll
+_noad_backup/
+node_modules/
+__pycache__/
+*.pyc
+_syntax_check.js
